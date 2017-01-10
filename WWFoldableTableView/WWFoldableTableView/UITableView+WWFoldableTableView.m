@@ -14,8 +14,11 @@
 #pragma mark - init
 + (void)load
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
     [self ww_swizzInstanceMethod:@selector(_numberOfSections) withMethod:@selector(ww__numberOfSections)];
     [self ww_swizzInstanceMethod:@selector(_numberOfRowsInSection:) withMethod:@selector(ww__numberOfRowsInSection:)];
+#pragma clang diagnostic pop
 }
 
 - (NSInteger)ww__numberOfSections
@@ -121,7 +124,7 @@ static const char WWFoldStateKey = '\0';
     self.ww_foldState = state;
     
     @try {
-        //防止为止
+        //防止crash
         [self reloadSections:[NSIndexSet indexSetWithIndex:section] withRowAnimation:UITableViewRowAnimationFade];
     } @catch (NSException *exception) {
         NSLog(@"%@", exception);
@@ -138,7 +141,7 @@ static const char WWFoldStateKey = '\0';
     if(orig && new){
         method_exchangeImplementations(orig, new);
     }else{
-        NSLog(@"swizz method failed");
+        NSLog(@"swizz instance method failed: %s", sel_getName(methodOrig));
     }
 }
 
@@ -149,7 +152,7 @@ static const char WWFoldStateKey = '\0';
     if(orig && new){
         method_exchangeImplementations(orig, new);
     }else{
-        NSLog(@"swizz method failed");
+        NSLog(@"swizz class method failed: %s", sel_getName(methodOrig));
     }
 }
 
