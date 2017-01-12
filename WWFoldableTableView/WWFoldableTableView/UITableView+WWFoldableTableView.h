@@ -16,10 +16,8 @@
  *  设为YES，让tableView具备折叠功能
  */
 @property (assign, nonatomic) BOOL ww_foldable;
-/**
- *  设为YES，让tableView初次加载时折叠所有section
- */
-@property (assign, nonatomic) BOOL ww_foldAtFirst;
+
+
 
 /**
  *  返回某个section的折叠状态。YES - 折叠中

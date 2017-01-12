@@ -16,28 +16,9 @@
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    [self ww_swizzInstanceMethod:@selector(_numberOfSections) withMethod:@selector(ww__numberOfSections)];
+//    [self ww_swizzInstanceMethod:@selector(_numberOfSections) withMethod:@selector(ww__numberOfSections)];
     [self ww_swizzInstanceMethod:@selector(_numberOfRowsInSection:) withMethod:@selector(ww__numberOfRowsInSection:)];
 #pragma clang diagnostic pop
-}
-
-- (NSInteger)ww__numberOfSections
-{
-    NSInteger count = [self ww__numberOfSections];
-    
-    if(self.ww_foldable && !self.ww_foldState){
-        //如果是可折叠列表，在获取section的数量后 初始化 ww_foldState
-        NSMutableSet *foldState = [NSMutableSet set];
-        if(self.ww_foldAtFirst){
-            NSInteger index = 0;
-            while (index<count) {
-                [foldState addObject:@(index++)];
-            }
-        }
-        self.ww_foldState = foldState;
-    }
-    
-    return count;
 }
 
 - (NSInteger)ww__numberOfRowsInSection:(NSInteger)section
@@ -63,27 +44,18 @@ static const char WWFoldableKey = '\0';
     [self willChangeValueForKey:@"ww_foldable"];
     objc_setAssociatedObject(self, &WWFoldableKey, @(ww_foldable), OBJC_ASSOCIATION_ASSIGN);
     [self didChangeValueForKey:@"ww_foldable"];
+    
+    //initialize
+    if(ww_foldable && !self.ww_foldState){
+        NSMutableSet *foldState = [NSMutableSet set];
+        self.ww_foldState = foldState;
+    }
+    
     //clean up
     if(!ww_foldable){
-        [self setWw_foldAtFirst:NO];
         [self setWw_foldState:nil];
     }
 }
-
-#pragma mark - getter/setter
-static const char WWFoldAtFirstKey = '\0';
-- (BOOL)ww_foldAtFirst
-{
-    return [objc_getAssociatedObject(self, &WWFoldAtFirstKey) boolValue];
-}
-
-- (void)setWw_foldAtFirst:(BOOL)ww_foldAtFirst
-{
-    [self willChangeValueForKey:@"ww_foldAtFirst"];
-    objc_setAssociatedObject(self, &WWFoldAtFirstKey, @(ww_foldAtFirst), OBJC_ASSOCIATION_ASSIGN);
-    [self didChangeValueForKey:@"ww_foldAtFirst"];
-}
-
 
 static const char WWFoldStateKey = '\0';
 - (NSMutableSet *)ww_foldState

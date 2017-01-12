@@ -67,8 +67,6 @@
         
         //设置可折叠
         _tableView.ww_foldable = YES;
-        //如有需要可设置初始折叠，非必须
-        _tableView.ww_foldAtFirst = YES;
         
     }
     return _tableView;
